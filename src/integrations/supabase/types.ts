@@ -14,16 +14,182 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      categories: {
+        Row: {
+          color: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string
+          id: string
+          kind: Database["public"]["Enums"]["user_kind"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string
+          id: string
+          kind?: Database["public"]["Enums"]["user_kind"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["user_kind"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      suggestion_responses: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          responder_id: string
+          suggestion_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          responder_id: string
+          suggestion_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          responder_id?: string
+          suggestion_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "suggestion_responses_suggestion_id_fkey"
+            columns: ["suggestion_id"]
+            isOneToOne: false
+            referencedRelation: "suggestions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      suggestions: {
+        Row: {
+          author_id: string
+          category_id: string | null
+          created_at: string
+          id: string
+          is_anonymous: boolean
+          message: string
+          priority: Database["public"]["Enums"]["suggestion_priority"]
+          status: Database["public"]["Enums"]["suggestion_status"]
+          title: string
+          type: Database["public"]["Enums"]["suggestion_type"]
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          category_id?: string | null
+          created_at?: string
+          id?: string
+          is_anonymous?: boolean
+          message: string
+          priority?: Database["public"]["Enums"]["suggestion_priority"]
+          status?: Database["public"]["Enums"]["suggestion_status"]
+          title: string
+          type?: Database["public"]["Enums"]["suggestion_type"]
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          category_id?: string | null
+          created_at?: string
+          id?: string
+          is_anonymous?: boolean
+          message?: string
+          priority?: Database["public"]["Enums"]["suggestion_priority"]
+          status?: Database["public"]["Enums"]["suggestion_status"]
+          title?: string
+          type?: Database["public"]["Enums"]["suggestion_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "suggestions_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_staff: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
+      suggestion_priority: "baixa" | "media" | "alta" | "urgente"
+      suggestion_status:
+        | "nova"
+        | "em_analise"
+        | "em_andamento"
+        | "respondida"
+        | "arquivada"
+      suggestion_type: "sugestao" | "reclamacao" | "elogio" | "duvida"
+      user_kind: "aluno" | "responsavel" | "professor" | "coordenacao" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +316,18 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+      suggestion_priority: ["baixa", "media", "alta", "urgente"],
+      suggestion_status: [
+        "nova",
+        "em_analise",
+        "em_andamento",
+        "respondida",
+        "arquivada",
+      ],
+      suggestion_type: ["sugestao", "reclamacao", "elogio", "duvida"],
+      user_kind: ["aluno", "responsavel", "professor", "coordenacao", "admin"],
+    },
   },
 } as const
