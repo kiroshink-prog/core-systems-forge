@@ -52,6 +52,7 @@ function AuthPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
     try {
       if (tab === "signup") {
@@ -129,16 +130,16 @@ function AuthPage() {
             >Cadastrar</button>
           </div>
 
-          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
             {tab === "signup" && (
               <>
                 <div className="space-y-1.5">
                   <Label htmlFor="name">Nome completo</Label>
-                  <Input id="name" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Ex: Ana Silva" required />
+                  <Input id="name" autoComplete="name" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Ex: Ana Silva" required disabled={loading} />
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="kind">Você é</Label>
-                  <Select value={kind} onValueChange={(v) => setKind(v as UserKind)}>
+                  <Select value={kind} onValueChange={(v) => setKind(v as UserKind)} disabled={loading}>
                     <SelectTrigger id="kind"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {(Object.keys(KIND_LABELS) as UserKind[]).map((k) => (
@@ -151,15 +152,17 @@ function AuthPage() {
             )}
             <div className="space-y-1.5">
               <Label htmlFor="email">E-mail</Label>
-              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="voce@exemplo.com" required />
+              <Input id="email" type="email" inputMode="email" autoComplete="email" autoFocus value={email} onChange={(e) => setEmail(e.target.value)} placeholder="voce@exemplo.com" required disabled={loading} />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="password">Senha</Label>
-              <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={tab === "signup" ? "Mínimo 8 caracteres" : "Sua senha"} required />
+              <Input id="password" type="password" autoComplete={tab === "signup" ? "new-password" : "current-password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder={tab === "signup" ? "Mínimo 8 caracteres" : "Sua senha"} required disabled={loading} />
             </div>
 
-            <Button type="submit" disabled={loading} className="w-full bg-hero shadow-glow hover:opacity-95">
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : tab === "signin" ? "Entrar" : "Criar conta"}
+            <Button type="submit" disabled={loading} className="w-full bg-hero shadow-glow transition-all hover:opacity-95 active:scale-[0.99]">
+              {loading ? (
+                <span className="inline-flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> {tab === "signin" ? "Entrando…" : "Criando conta…"}</span>
+              ) : tab === "signin" ? "Entrar" : "Criar conta"}
             </Button>
           </form>
 
