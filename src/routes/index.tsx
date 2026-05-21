@@ -46,7 +46,7 @@ function Landing() {
             Comunicação escolar com transparência
           </div>
           <h1 className="mt-6 text-4xl font-bold leading-tight md:text-6xl">
-            A caixa de sugestões que <span className="bg-hero bg-clip-text text-transparent">escuta de verdade</span>.
+            A caixa de sugestões que <span className="text-primary">escuta de verdade</span>.
           </h1>
           <p className="mt-6 text-lg text-muted-foreground">
             Alunos, famílias e professores enviam ideias, reclamações e elogios em segundos.
