@@ -40,7 +40,7 @@ function AuthenticatedLayout() {
             <div className="grid h-9 w-9 place-items-center rounded-lg bg-hero shadow-glow">
               <MessageSquareHeart className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="font-display text-base font-bold">EscutaEscola</span>
+            <span className="font-display text-base font-bold">Escuta de Verdade</span>
           </Link>
         </div>
         <nav className="flex-1 space-y-1 p-3">
@@ -87,7 +87,7 @@ function AuthenticatedLayout() {
             <div className="grid h-8 w-8 place-items-center rounded-md bg-hero">
               <MessageSquareHeart className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="font-display font-bold">EscutaEscola</span>
+            <span className="font-display font-bold">Escuta de Verdade</span>
           </Link>
           <Button variant="ghost" size="sm" onClick={() => signOut().then(() => navigate({ to: "/" }))}>
             <LogOut className="h-4 w-4" />

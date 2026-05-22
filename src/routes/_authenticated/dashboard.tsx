@@ -118,10 +118,13 @@ function Dashboard() {
     [categories],
   );
 
+  const firstName = (user?.user_metadata?.full_name as string | undefined)?.split(" ")[0] ?? "";
+
   return (
     <div className="space-y-8">
-      <header>
-        <h1 className="font-display text-3xl font-bold">Sua voz importa</h1>
+      <header className="rounded-2xl border bg-card-soft p-6 shadow-soft">
+        <p className="text-sm font-medium text-primary">Olá{firstName ? `, ${firstName}` : ""} 👋</p>
+        <h1 className="mt-1 font-display text-3xl font-bold">Sua voz importa</h1>
         <p className="mt-1 text-muted-foreground">
           Envie sugestões, reclamações ou elogios. Acompanhe tudo aqui.
         </p>
