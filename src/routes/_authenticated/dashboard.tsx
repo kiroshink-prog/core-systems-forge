@@ -26,7 +26,7 @@ type SuggestionRow = Database["public"]["Tables"]["suggestions"]["Row"];
 type ResponseRow = Database["public"]["Tables"]["suggestion_responses"]["Row"];
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Minhas sugestões — EscutaEscola" }] }),
+  head: () => ({ meta: [{ title: "Minhas sugestões — VOXIA" }] }),
   component: Dashboard,
 });
 
