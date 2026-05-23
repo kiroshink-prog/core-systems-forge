@@ -24,7 +24,7 @@ type ResponseRow = Database["public"]["Tables"]["suggestion_responses"]["Row"];
 type ProfileLite = { id: string; full_name: string; kind: Database["public"]["Enums"]["user_kind"] };
 
 export const Route = createFileRoute("/_authenticated/admin")({
-  head: () => ({ meta: [{ title: "Painel da escola — EscutaEscola" }] }),
+  head: () => ({ meta: [{ title: "Painel da escola — VOXIA" }] }),
   component: AdminPanel,
 });
 

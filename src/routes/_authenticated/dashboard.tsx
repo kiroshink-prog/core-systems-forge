@@ -11,22 +11,24 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {
+  COMMANDS,
   PRIORITY_LABELS,
   PRIORITY_TONE,
   STATUS_LABELS,
   STATUS_TONE,
   TYPE_LABELS,
+  parseCommand,
 } from "@/lib/suggestions";
 import type { SuggestionPriority, SuggestionType } from "@/lib/suggestions";
 import type { Database } from "@/integrations/supabase/types";
-import { Loader2, Send, MessageCircle } from "lucide-react";
+import { Loader2, Send, MessageCircle, Terminal } from "lucide-react";
 
 type Category = Database["public"]["Tables"]["categories"]["Row"];
 type SuggestionRow = Database["public"]["Tables"]["suggestions"]["Row"];
 type ResponseRow = Database["public"]["Tables"]["suggestion_responses"]["Row"];
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Minhas sugestões — EscutaEscola" }] }),
+  head: () => ({ meta: [{ title: "Minhas sugestões — VOXIA" }] }),
   component: Dashboard,
 });
 
@@ -88,21 +90,45 @@ function Dashboard() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
-    const parsed = formSchema.safeParse({ title, message });
+
+    // Sistema NGL: detecta comando no início do título ou da mensagem
+    let finalTitle = title;
+    let finalMessage = message;
+    let finalType = type;
+    let finalPriority = priority;
+    let finalAnon = isAnonymous;
+
+    const cmdInTitle = parseCommand(title);
+    const cmdInMsg = !cmdInTitle ? parseCommand(message) : null;
+    const cmd = cmdInTitle ?? cmdInMsg;
+    if (cmd) {
+      if (cmd.spec.command === "/help") {
+        toast.info("Comandos: " + COMMANDS.map((c) => c.command).join(" "));
+        return;
+      }
+      if (cmd.spec.apply?.type) finalType = cmd.spec.apply.type;
+      if (cmd.spec.apply?.priority) finalPriority = cmd.spec.apply.priority;
+      if (cmd.spec.apply?.isAnonymous != null) finalAnon = cmd.spec.apply.isAnonymous;
+      if (cmdInTitle) finalTitle = cmd.rest || title.replace(cmd.spec.command, "").trim();
+      if (cmdInMsg) finalMessage = cmd.rest || message;
+      if (!finalTitle) finalTitle = finalMessage.slice(0, 80);
+    }
+
+    const parsed = formSchema.safeParse({ title: finalTitle, message: finalMessage });
     if (!parsed.success) { toast.error(parsed.error.issues[0].message); return; }
     setSubmitting(true);
     const { error } = await supabase.from("suggestions").insert({
       author_id: user.id,
       title: parsed.data.title,
       message: parsed.data.message,
-      type,
-      priority,
+      type: finalType,
+      priority: finalPriority,
       category_id: categoryId || null,
-      is_anonymous: isAnonymous,
+      is_anonymous: finalAnon,
     });
     setSubmitting(false);
     if (error) { toast.error(error.message); return; }
-    toast.success("Enviado! Obrigado por contribuir.");
+    toast.success(cmd ? `Comando ${cmd.spec.command} aplicado · enviado!` : "Enviado! Obrigado por contribuir.");
     setTitle(""); setMessage(""); setType("sugestao"); setPriority("media"); setIsAnonymous(false);
     void reload();
   };
@@ -139,11 +165,29 @@ function Dashboard() {
 
       {/* Form */}
       <section className="rounded-2xl border bg-card-soft p-6 shadow-soft">
-        <h2 className="font-display text-xl font-semibold">Nova mensagem</h2>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="font-display text-xl font-semibold">Nova mensagem</h2>
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+            <Terminal className="h-3.5 w-3.5" /> Comandos NGL ativos
+          </div>
+        </div>
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {COMMANDS.map((c) => (
+            <button
+              type="button"
+              key={c.command}
+              onClick={() => setTitle((t) => (t.startsWith("/") ? c.command + " " : c.command + " " + t))}
+              title={c.description}
+              className="rounded-md border border-border bg-background/60 px-2 py-0.5 font-mono text-xs text-primary hover:bg-primary/10"
+            >
+              {c.command}
+            </button>
+          ))}
+        </div>
         <form onSubmit={submit} className="mt-5 grid gap-4 md:grid-cols-2">
           <div className="space-y-1.5 md:col-span-2">
-            <Label htmlFor="title">Título</Label>
-            <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Resuma em poucas palavras" maxLength={150} required />
+            <Label htmlFor="title">Título · dica: comece com <code className="rounded bg-primary/15 px-1 text-primary">/anon</code> ou <code className="rounded bg-primary/15 px-1 text-primary">/report</code></Label>
+            <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="/idea Sala de leitura no recreio…" maxLength={150} required />
           </div>
 
           <div className="space-y-1.5">

@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { KIND_LABELS } from "@/lib/suggestions";
 import type { UserKind } from "@/lib/suggestions";
-import { MessageSquareHeart, Loader2 } from "lucide-react";
+import { Radio, Loader2 } from "lucide-react";
 
 const searchSchema = z.object({
   mode: z.enum(["signin", "signup"]).optional(),
@@ -18,7 +18,7 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute("/auth")({
   validateSearch: searchSchema,
-  head: () => ({ meta: [{ title: "Entrar — EscutaEscola" }] }),
+  head: () => ({ meta: [{ title: "Entrar — VOXIA" }] }),
   component: AuthPage,
 });
 
@@ -93,20 +93,22 @@ function AuthPage() {
           <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-white/10 blur-3xl" />
         </div>
         <Link to="/" className="relative flex items-center gap-2">
-          <div className="grid h-9 w-9 place-items-center rounded-lg bg-white/15 backdrop-blur">
-            <MessageSquareHeart className="h-5 w-5" />
+          <div className="grid h-9 w-9 place-items-center rounded-xl bg-white/15 backdrop-blur">
+            <Radio className="h-5 w-5" />
           </div>
-          <span className="font-display text-lg font-bold">Escuta de Verdade</span>
+          <span className="font-display text-xl font-extrabold tracking-tight">VOXIA</span>
         </Link>
         <div className="relative">
-          <h2 className="font-display text-3xl font-bold leading-tight md:text-4xl">
-            Cada voz da escola merece ser ouvida.
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary-foreground/80">Plataforma escolar</p>
+          <h2 className="mt-3 font-display text-4xl font-extrabold leading-[1.05] md:text-5xl">
+            A voz que move a escola.
           </h2>
-          <p className="mt-4 max-w-md text-primary-foreground/85">
-            Envie sugestões, acompanhe respostas e ajude a construir uma escola melhor — com transparência e respeito.
+          <p className="mt-5 max-w-md text-primary-foreground/85">
+            Comandos rápidos no estilo NGL, moderação por IA e dashboards em tempo real.
+            Sua mensagem chega. Sua escola muda.
           </p>
         </div>
-        <p className="relative text-xs text-primary-foreground/70">© {new Date().getFullYear()} Escuta de Verdade</p>
+        <p className="relative text-xs text-primary-foreground/70">© {new Date().getFullYear()} VOXIA · A voz que move a escola</p>
       </div>
 
       {/* Form */}

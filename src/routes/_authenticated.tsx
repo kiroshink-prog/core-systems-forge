@@ -2,7 +2,7 @@ import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tan
 import { useEffect } from "react";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { MessageSquareHeart, LayoutDashboard, ShieldCheck, LogOut, Loader2 } from "lucide-react";
+import { Radio, LayoutDashboard, ShieldCheck, LogOut, Loader2 } from "lucide-react";
 import { KIND_LABELS } from "@/lib/suggestions";
 
 export const Route = createFileRoute("/_authenticated")({
@@ -38,9 +38,9 @@ function AuthenticatedLayout() {
         <div className="border-b p-5">
           <Link to="/dashboard" className="flex items-center gap-2">
             <div className="grid h-9 w-9 place-items-center rounded-lg bg-hero shadow-glow">
-              <MessageSquareHeart className="h-5 w-5 text-primary-foreground" />
+              <Radio className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="font-display text-base font-bold">Escuta de Verdade</span>
+            <span className="font-display text-base font-bold">VOXIA</span>
           </Link>
         </div>
         <nav className="flex-1 space-y-1 p-3">
@@ -85,9 +85,9 @@ function AuthenticatedLayout() {
         <header className="flex items-center justify-between border-b bg-card px-4 py-3 md:hidden">
           <Link to="/dashboard" className="flex items-center gap-2">
             <div className="grid h-8 w-8 place-items-center rounded-md bg-hero">
-              <MessageSquareHeart className="h-4 w-4 text-primary-foreground" />
+              <Radio className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="font-display font-bold">Escuta de Verdade</span>
+            <span className="font-display font-bold">VOXIA</span>
           </Link>
           <Button variant="ghost" size="sm" onClick={() => signOut().then(() => navigate({ to: "/" }))}>
             <LogOut className="h-4 w-4" />
