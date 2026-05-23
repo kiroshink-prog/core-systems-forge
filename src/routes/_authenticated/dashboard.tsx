@@ -11,15 +11,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {
+  COMMANDS,
   PRIORITY_LABELS,
   PRIORITY_TONE,
   STATUS_LABELS,
   STATUS_TONE,
   TYPE_LABELS,
+  parseCommand,
 } from "@/lib/suggestions";
 import type { SuggestionPriority, SuggestionType } from "@/lib/suggestions";
 import type { Database } from "@/integrations/supabase/types";
-import { Loader2, Send, MessageCircle } from "lucide-react";
+import { Loader2, Send, MessageCircle, Terminal } from "lucide-react";
 
 type Category = Database["public"]["Tables"]["categories"]["Row"];
 type SuggestionRow = Database["public"]["Tables"]["suggestions"]["Row"];
@@ -88,21 +90,45 @@ function Dashboard() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
-    const parsed = formSchema.safeParse({ title, message });
+
+    // Sistema NGL: detecta comando no início do título ou da mensagem
+    let finalTitle = title;
+    let finalMessage = message;
+    let finalType = type;
+    let finalPriority = priority;
+    let finalAnon = isAnonymous;
+
+    const cmdInTitle = parseCommand(title);
+    const cmdInMsg = !cmdInTitle ? parseCommand(message) : null;
+    const cmd = cmdInTitle ?? cmdInMsg;
+    if (cmd) {
+      if (cmd.spec.command === "/help") {
+        toast.info("Comandos: " + COMMANDS.map((c) => c.command).join(" "));
+        return;
+      }
+      if (cmd.spec.apply?.type) finalType = cmd.spec.apply.type;
+      if (cmd.spec.apply?.priority) finalPriority = cmd.spec.apply.priority;
+      if (cmd.spec.apply?.isAnonymous != null) finalAnon = cmd.spec.apply.isAnonymous;
+      if (cmdInTitle) finalTitle = cmd.rest || title.replace(cmd.spec.command, "").trim();
+      if (cmdInMsg) finalMessage = cmd.rest || message;
+      if (!finalTitle) finalTitle = finalMessage.slice(0, 80);
+    }
+
+    const parsed = formSchema.safeParse({ title: finalTitle, message: finalMessage });
     if (!parsed.success) { toast.error(parsed.error.issues[0].message); return; }
     setSubmitting(true);
     const { error } = await supabase.from("suggestions").insert({
       author_id: user.id,
       title: parsed.data.title,
       message: parsed.data.message,
-      type,
-      priority,
+      type: finalType,
+      priority: finalPriority,
       category_id: categoryId || null,
-      is_anonymous: isAnonymous,
+      is_anonymous: finalAnon,
     });
     setSubmitting(false);
     if (error) { toast.error(error.message); return; }
-    toast.success("Enviado! Obrigado por contribuir.");
+    toast.success(cmd ? `Comando ${cmd.spec.command} aplicado · enviado!` : "Enviado! Obrigado por contribuir.");
     setTitle(""); setMessage(""); setType("sugestao"); setPriority("media"); setIsAnonymous(false);
     void reload();
   };
