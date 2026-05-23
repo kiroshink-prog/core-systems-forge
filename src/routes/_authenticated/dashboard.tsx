@@ -165,11 +165,29 @@ function Dashboard() {
 
       {/* Form */}
       <section className="rounded-2xl border bg-card-soft p-6 shadow-soft">
-        <h2 className="font-display text-xl font-semibold">Nova mensagem</h2>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="font-display text-xl font-semibold">Nova mensagem</h2>
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+            <Terminal className="h-3.5 w-3.5" /> Comandos NGL ativos
+          </div>
+        </div>
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {COMMANDS.map((c) => (
+            <button
+              type="button"
+              key={c.command}
+              onClick={() => setTitle((t) => (t.startsWith("/") ? c.command + " " : c.command + " " + t))}
+              title={c.description}
+              className="rounded-md border border-border bg-background/60 px-2 py-0.5 font-mono text-xs text-primary hover:bg-primary/10"
+            >
+              {c.command}
+            </button>
+          ))}
+        </div>
         <form onSubmit={submit} className="mt-5 grid gap-4 md:grid-cols-2">
           <div className="space-y-1.5 md:col-span-2">
-            <Label htmlFor="title">Título</Label>
-            <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Resuma em poucas palavras" maxLength={150} required />
+            <Label htmlFor="title">Título · dica: comece com <code className="rounded bg-primary/15 px-1 text-primary">/anon</code> ou <code className="rounded bg-primary/15 px-1 text-primary">/report</code></Label>
+            <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="/idea Sala de leitura no recreio…" maxLength={150} required />
           </div>
 
           <div className="space-y-1.5">
